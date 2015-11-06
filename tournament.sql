@@ -1,12 +1,10 @@
 -- Table definitions for the tournament project.
---
--- Put your SQL 'create table' statements in this file; also 'create view'
--- statements if you choose to use it.
---
--- You can write comments in this file by starting them with two dashes, like
--- these lines here.
+-- \i tournament.sql 
 
--- create database tournament;
+drop database if exists tournament;
+create database tournament;
+
+\c tournament;
 
 create table players (
 	id serial PRIMARY KEY,
@@ -41,65 +39,16 @@ create table rounds (
 );
 
 
--- some sample values
---setup the players and tournaments
-insert into tournaments (name, startdate) values ('Millionaire Chess', '2015-10-08');
-insert into tournaments (name, startdate) values ('FIDE World Cup', '2015-09-10');
-insert into players (name) values ('Bears');
-insert into players (name) values ('Dogs');
-insert into players (name) values ('Foxes');
-insert into players (name) values ('Apes');
-insert into players (name) values ('Hares');
-insert into players (name) values ('Colts');
-insert into players (name) values ('Eels');
-insert into players (name) values ('Jackels');
-insert into players (name) values ('Gators');
-insert into players (name) values ('Ibises');
-insert into registered_players (player, tournament) values (1, 1);
-insert into registered_players (player, tournament) values (2, 1);
-insert into registered_players (player, tournament) values (3, 1);
-insert into registered_players (player, tournament) values (4, 1);
-insert into registered_players (player, tournament) values (5, 1);
-insert into registered_players (player, tournament) values (6, 1);
-insert into registered_players (player, tournament) values (7, 1);
-insert into registered_players (player, tournament) values (8, 1);
-insert into registered_players (player, tournament) values (9, 1);
-insert into registered_players (player, tournament) values (10, 1);
-insert into registered_players (player, tournament) values (1, 2);
-insert into registered_players (player, tournament) values (2, 2);
-insert into registered_players (player, tournament) values (3, 2);
-insert into registered_players (player, tournament) values (4, 2);
-insert into registered_players (player, tournament) values (5, 2);
-
---round 1
-insert into matches (player1, player2, winner) values (1, 6, 1);
-insert into matches (player1, player2, winner) values (2, 7, 2);
-insert into matches (player1, player2, winner) values (3, 8, 3);
-insert into matches (player1, player2, winner) values (4, 9, 4);
-insert into matches (player1, player2, winner) values (5, 10, 5);
-insert into rounds (tournament, round, match) values (1, 1, 1);
-insert into rounds (tournament, round, match) values (1, 1, 2);
-insert into rounds (tournament, round, match) values (1, 1, 3);
-insert into rounds (tournament, round, match) values (1, 1, 4);
-insert into rounds (tournament, round, match) values (1, 1, 5);
-
---round 2
-insert into matches (player1, player2, winner) values (1, 3, 1);
-insert into matches (player1, player2, winner) values (2, 4, 4);
-insert into matches (player1, player2, winner) values (5, 6, 6);
-insert into matches (player1, player2, winner) values (7, 9, 7);
-insert into matches (player1, player2, winner) values (10, 8, 10);
-insert into rounds (tournament, round, match) values (1, 2, 6);
-insert into rounds (tournament, round, match) values (1, 2, 7);
-insert into rounds (tournament, round, match) values (1, 2, 8);
-insert into rounds (tournament, round, match) values (1, 2, 9);
-insert into rounds (tournament, round, match) values (1, 2, 10);
-
 -- view showing the matches played for each round in a tournament
 CREATE VIEW tournament_matches_per_round AS
 	select tournament, round, player1, player2, winner
 	from rounds, matches
 	where rounds.match = matches.id;
+
+CREATE VIEW registered_player_names AS
+	select registered_players.tournament, registered_players.player, players.name
+	from registered_players left join players
+	on registered_players.player = players.id;
 
 -- view showing the number of matches played for each player registered for a tournament
 CREATE VIEW tournament_matches_per_reg_player AS
@@ -112,14 +61,16 @@ CREATE VIEW tournament_matches_per_reg_player AS
 --view showing the number of matches won for each player registered for a tournament
 CREATE VIEW tournament_matches_won_per_reg_player AS
 	select p.tournament, p.registered_player, count(tournament_matches_per_round.winner) as matches_won
-    from (select player as registered_player, tournament from registered_players) p left join tournament_matches_per_round
+    from (select player as registered_player, name, tournament from registered_player) p left join tournament_matches_per_round
 	on p.registered_player = tournament_matches_per_round.winner and p.tournament = tournament_matches_per_round.tournament
     group by p.tournament, p.registered_player order by p.tournament, p.registered_player;
 
 --view showing the player rankings for each player registered for a tournament
 CREATE VIEW tournament_player_rankings AS
-	select tournament, registered_player, matches_won as score from tournament_matches_won_per_reg_player
-	order by tournament, score desc;
+	select tmw.tournament, tmw.registered_player, rpn.name, tmw.matches_won as wins, tmp.matches_played as matches
+	from tournament_matches_won_per_reg_player tmw, registered_player_names rpn, tournament_matches_per_reg_player tmp
+	where tmw.registered_player = rpn.player and tmw.tournament = rpn.tournament and tmw.registered_player = tmp.registered_player and tmw.tournament = tmp.tournament 
+	order by tmw.tournament, wins desc;
 
 -- view showing the sum of wins for match opponents for each player registered for a tournament
 CREATE VIEW tournament_match_opponent_wins AS
@@ -131,9 +82,9 @@ CREATE VIEW tournament_match_opponent_wins AS
     group by p.tournament, p.registered_player order by p.tournament, p.registered_player;
 
 -- player rankings based on score next to opponent wins
-select mw.tournament, mw.registered_player, mw.matches_won, ow.sum_opponent_wins from tournament_matches_won_per_reg_player mw, tournament_match_opponent_wins ow
-	where mw.registered_player = ow.registered_player and mw.tournament = ow.tournament
-	order by mw.tournament, mw.matches_won desc;
+---select mw.tournament, mw.registered_player, mw.matches_won, ow.sum_opponent_wins from tournament_matches_won_per_reg_player mw, tournament_match_opponent_wins ow
+--	where mw.registered_player = ow.registered_player and mw.tournament = ow.tournament
+	--order by mw.tournament, mw.matches_won desc;
 
 
 --select player, count(*)

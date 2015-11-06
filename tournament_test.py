@@ -8,14 +8,14 @@ def testDeleteMatches():
     deleteMatches()
     print "1. Old matches can be deleted."
 
-def testDeleteTournaments():
-    deleteTournaments()
-    print "Extra credit: Tournament records can be deleted."
-
 def testDelete():
     deleteMatches()
     deletePlayers()
     print "2. Player records can be deleted."
+
+def testDeleteTournaments():
+    deleteTournaments()
+    print "Extra credit: Tournament records can be deleted."
 
 def testCount():
     deleteMatches()
@@ -28,6 +28,15 @@ def testCount():
         raise ValueError("After deleting, countPlayers should return zero.")
     print "3. After deleting, countPlayers() returns zero."
 
+def testAddTournament():
+    deleteTournaments()
+    tournamentID = addTournament("Millionaire Chess", "2015-10-08")
+    c = countTournaments()
+    if c != 1:
+        raise ValueError(
+            "After one tournament is added, countTournaments() should be 1.")
+    print "Extra credit: After adding a tournament, countTournaments() returns 1."
+    return tournamentID
 
 def testRegister():
     deleteMatches()
@@ -129,12 +138,13 @@ def testPairings():
 
 if __name__ == '__main__':
     testDeleteMatches()
-    testDeleteTournaments()
     testDelete()
-    #testCount()
-    #testRegister()
-    #testRegisterCountDelete()
-    #testStandingsBeforeMatches()
+    testDeleteTournaments()
+    testAddTournament()
+    testCount()
+    testRegister()
+    testRegisterCountDelete()
+    testStandingsBeforeMatches()
     #testReportMatches()
     #testPairings()
     print "Success!  All tests pass!"
