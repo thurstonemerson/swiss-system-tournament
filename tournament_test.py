@@ -137,16 +137,24 @@ def testPairings():
 
 
 if __name__ == '__main__':
-    testDeleteMatches()
-    testDelete()
-    testDeleteTournaments()
-    testAddTournament()
-    testCount()
-    testRegister()
-    testRegisterCountDelete()
-    testStandingsBeforeMatches()
-    #testReportMatches()
-    #testPairings()
-    print "Success!  All tests pass!"
 
+    try:
+
+        testDeleteMatches()
+        testDelete()
+        testDeleteTournaments()
+        testAddTournament()
+        testCount()
+        testRegister()
+        testRegisterCountDelete()
+        testStandingsBeforeMatches()
+        testReportMatches()
+        testPairings()
+        print "Success!  All tests pass!"
+
+    except psycopg2.DatabaseError, e:
+        print 'Error %s' % e    
+        rollback()
+        closeConnection()
+        raise e
 
