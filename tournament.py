@@ -4,7 +4,6 @@
 #
 
 import psycopg2
-from itertools import groupby
 
 _connection = None
 
@@ -58,10 +57,12 @@ def countPlayers(tournamentName="Millionaire Chess", startdate="2015-10-08"):
     cursor = connection.cursor()
 
     cursor.execute("select count(*) from registered_players where tournament = (select id from tournaments where name = %s and startdate = %s);", (tournamentName, startdate))
-    count = cursor.fetchone()[0]
+    count = cursor.fetchone()
     connection.close()
 
-    return count
+    if count:
+        return count[0]
+    return 0
 
 def countTournaments():
     """Returns the number of tournaments in the database."""
@@ -70,12 +71,12 @@ def countTournaments():
     cursor = connection.cursor()
 
     cursor.execute("select count(*) from tournaments;")
-    count = cursor.fetchone()[0]
+    count = cursor.fetchone()
     connection.close()
 
-    return count
-
-
+    if count:
+        return count[0]
+    return 0
 
 def addTournament(tournamentName, startdate):
     """Extra credit: Adds a tournament to the tournament database.
@@ -124,7 +125,8 @@ def playerStandings(tournamentName="Millionaire Chess", startdate="2015-10-08"):
     """Returns a list of the players and their win records for a particular tournament, sorted by wins.
 
     The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
+    tied for first place if there is currently a tie. Tied players are ranked according to 
+    opponent match wins.
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
@@ -136,13 +138,12 @@ def playerStandings(tournamentName="Millionaire Chess", startdate="2015-10-08"):
     connection = connect()
     cursor = connection.cursor()
 
-    cursor.execute("select registered_player as id, name, wins, matches from tournament_player_rankings where tournament = (select id from tournaments where name = %s and startdate = %s);", (tournamentName, startdate))
+    cursor.execute("select registered_player as id, name, wins, matches from tournament_player_rankings_omw where tournament = (select id from tournaments where name = %s and startdate = %s);", (tournamentName, startdate))
     rows = cursor.fetchall()
+    connection.close()
 
     #tuple containing registered player id, name, number of wins and number of matches played
     playerRankings = [(row[0], row[1], row[2], row[3]) for row in rows]
-
-    connection.close()
 
     return playerRankings
 
@@ -185,7 +186,7 @@ def swissPairings(tournamentName="Millionaire Chess", startdate="2015-10-08"):
         id2: the second player's unique id
         name2: the second player's name
     """
-    standings = playerStandings()
+    standings = playerStandings(tournamentName, startdate)
     swissPairings = []
 
     #check assumption that the number of players is even
@@ -193,6 +194,6 @@ def swissPairings(tournamentName="Millionaire Chess", startdate="2015-10-08"):
 
     #pair every player in the ranked list with the player below him
     for player1, player2 in zip(standings[0::2], standings[1::2]):
-        swissPairings.append([player1[0], player1[1], player2[0], player2[1]])    
+        swissPairings.append([player1[0], player1[1], player2[0], player2[1]])   
 
     return swissPairings

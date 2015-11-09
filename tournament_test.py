@@ -30,17 +30,18 @@ def testCount():
 
 def testAddTournament():
     deleteTournaments()
-    tournamentID = addTournament("Millionaire Chess", "2015-10-08")
+    addTournament("Millionaire Chess", "2015-10-08")
     c = countTournaments()
     if c != 1:
         raise ValueError(
             "After one tournament is added, countTournaments() should be 1.")
     print "Extra credit: After adding a tournament, countTournaments() returns 1."
-    return tournamentID
 
 def testRegister():
     deleteMatches()
     deletePlayers()
+    deleteTournaments()
+    addTournament("Millionaire Chess", "2015-10-08")
     registerPlayer("Chandra Nalaar")
     c = countPlayers()
     if c != 1:
@@ -52,6 +53,8 @@ def testRegister():
 def testRegisterCountDelete():
     deleteMatches()
     deletePlayers()
+    deleteTournaments()
+    addTournament("Millionaire Chess", "2015-10-08")
     registerPlayer("Markov Chaney")
     registerPlayer("Joe Malik")
     registerPlayer("Mao Tsu-hsi")
@@ -70,6 +73,8 @@ def testRegisterCountDelete():
 def testStandingsBeforeMatches():
     deleteMatches()
     deletePlayers()
+    deleteTournaments()
+    addTournament("Millionaire Chess", "2015-10-08")
     registerPlayer("Melpomene Murray")
     registerPlayer("Randy Schwartz")
     standings = playerStandings()
@@ -93,6 +98,8 @@ def testStandingsBeforeMatches():
 def testReportMatches():
     deleteMatches()
     deletePlayers()
+    deleteTournaments()
+    addTournament("Millionaire Chess", "2015-10-08")
     registerPlayer("Bruno Walton")
     registerPlayer("Boots O'Neal")
     registerPlayer("Cathy Burton")
@@ -115,6 +122,8 @@ def testReportMatches():
 def testPairings():
     deleteMatches()
     deletePlayers()
+    deleteTournaments()
+    addTournament("Millionaire Chess", "2015-10-08")
     registerPlayer("Twilight Sparkle")
     registerPlayer("Fluttershy")
     registerPlayer("Applejack")
@@ -136,6 +145,39 @@ def testPairings():
     print "8. After one match, players with one win are paired."
 
 
+def testPlayerStandingsOMW():
+    deleteMatches()
+    deletePlayers()
+    deleteTournaments()
+    addTournament("FIDE World Cup", "2015-09-10")
+    registerPlayer("Bears", "FIDE World Cup", "2015-09-10");
+    registerPlayer("Dogs", "FIDE World Cup", "2015-09-10");
+    registerPlayer("Foxes", "FIDE World Cup", "2015-09-10");
+    registerPlayer("Apes", "FIDE World Cup", "2015-09-10");
+    registerPlayer("Hares", "FIDE World Cup", "2015-09-10");
+    registerPlayer("Colts", "FIDE World Cup", "2015-09-10");
+
+    standings = playerStandings("FIDE World Cup", "2015-09-10")
+    [id1, id2, id3, id4, id5, id6] = [row[0] for row in standings]
+
+    #round one of tournament
+    reportMatch(id1, id4, "FIDE World Cup", "2015-09-10", 1)
+    reportMatch(id2, id5, "FIDE World Cup", "2015-09-10", 1)
+    reportMatch(id3, id6, "FIDE World Cup", "2015-09-10", 1)
+
+    #round two of tournament
+    reportMatch(id1, id2, "FIDE World Cup", "2015-09-10", 2)
+    reportMatch(id4, id3, "FIDE World Cup", "2015-09-10", 2)
+    reportMatch(id5, id6, "FIDE World Cup", "2015-09-10", 2)
+
+    standings = playerStandings("FIDE World Cup", "2015-09-10")
+    [pid1, pid2, pid3, pid4, pid5, pid6] = [row[0] for row in standings]
+
+    if (pid1 != id1) or (pid2 not in (id2, id4)) or (pid4 not in (id5, id3)):
+        raise ValueError("Tied players are not ordered by opponent match wins.")
+
+    print "Extra credit: Tied players are ordered by opponent match wins."
+
 if __name__ == '__main__':
 
     try:
@@ -148,6 +190,7 @@ if __name__ == '__main__':
         testRegister()
         testRegisterCountDelete()
         testStandingsBeforeMatches()
+        testPlayerStandingsOMW()
         testReportMatches()
         testPairings()
         print "Success!  All tests pass!"

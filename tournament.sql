@@ -61,11 +61,11 @@ CREATE VIEW tournament_matches_per_reg_player AS
 --view showing the number of matches won for each player registered for a tournament
 CREATE VIEW tournament_matches_won_per_reg_player AS
 	select p.tournament, p.registered_player, count(tournament_matches_per_round.winner) as matches_won
-    from (select player as registered_player, name, tournament from registered_player) p left join tournament_matches_per_round
+    from (select player as registered_player, tournament from registered_players) p left join tournament_matches_per_round
 	on p.registered_player = tournament_matches_per_round.winner and p.tournament = tournament_matches_per_round.tournament
     group by p.tournament, p.registered_player order by p.tournament, p.registered_player;
 
---view showing the player rankings for each player registered for a tournament
+--view showing the player rankings from score for each player registered for a tournament
 CREATE VIEW tournament_player_rankings AS
 	select tmw.tournament, tmw.registered_player, rpn.name, tmw.matches_won as wins, tmp.matches_played as matches
 	from tournament_matches_won_per_reg_player tmw, registered_player_names rpn, tournament_matches_per_reg_player tmp
@@ -81,22 +81,10 @@ CREATE VIEW tournament_match_opponent_wins AS
     where p.registered_player = m.player and p.tournament = m.tournament and m.opponent = mw.registered_player and p.tournament = mw.tournament
     group by p.tournament, p.registered_player order by p.tournament, p.registered_player;
 
--- player rankings based on score next to opponent wins
----select mw.tournament, mw.registered_player, mw.matches_won, ow.sum_opponent_wins from tournament_matches_won_per_reg_player mw, tournament_match_opponent_wins ow
---	where mw.registered_player = ow.registered_player and mw.tournament = ow.tournament
-	--order by mw.tournament, mw.matches_won desc;
+-- view showing the player rankings from score and opponent match wins for each player registered for a tournament
+CREATE VIEW tournament_player_rankings_omw AS
+	select pr.tournament, pr.registered_player, pr.name, pr.wins, pr.matches, ow.sum_opponent_wins as omw
+	from tournament_player_rankings pr left join tournament_match_opponent_wins ow
+	on pr.registered_player = ow.registered_player and pr.tournament = ow.tournament
+	order by pr.tournament, pr.wins desc, omw desc;
 
-
---select player, count(*)
---    from ((select player1 as player from matches) union all (select player2 as player from matches)) m
---   group by player order by player;
--- CREATE VIEW tournament_match_opponents AS
--- 	select p.tournament, p.registered_player, m.opponent
--- 	from (select player as registered_player, tournament from registered_players) p, 
---     ((select player1 as player, player2 as opponent, tournament from tournament_matches_per_round) union all (select player2 as player, player1 as opponent, tournament from tournament_matches_per_round)) m
---     where p.registered_player = m.player and p.tournament = m.tournament
---     order by p.tournament, p.registered_player;
-
---     select mo.tournament, mo.registered_player, sum(mw.matches_won) as sum_opponent_wins from tournament_match_opponents mo, tournament_matches_won_per_reg_player mw
---     where mo.opponent = mw.registered_player and mo.tournament = mw.tournament
---     group by mo.tournament, mo.registered_player;
