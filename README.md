@@ -1,20 +1,45 @@
 #Swiss System Chess Tournament
 
-(Project in fulfillment of Udacity's Full-Stack Web Developer Nanodegree)
-
-##What is it?
-
-This Python module can be used to store the details of multiple chess tournaments. Game players can be registered into tournaments, and matches between players can be recorded. Player matches are scheduled using the Swiss pairing system where the goal is to pair (as close as possible) each player with an similar-skilled opponent. Players are ranked according to the number of matches won within a tournament,
+Python module which can be used to store the details of multiple chess tournaments. Game players can be registered into tournaments, and matches between players can be recorded. Player matches are scheduled using the Swiss pairing system where the goal is to pair (as close as possible) each player with an similar-skilled opponent. Players are ranked according to the number of matches won within a tournament,
 if the players are tied then they are ranked according to the number of matches won by their opponents. 
 
 
-##How to run:
+## Environment
 
-This module has a PostgreSQL backend. The database can be created from psql using the script provided:
+You'll need the following for your development environment:
 
+- Python
+- PostgreSQL
+
+Recommended to use the following tools:
+
+- virtualenv
+- virtualenvwrapper
+
+##Local Installation
+
+The following assumes you have all of the tools listed above installed.
+
+1. Clone the project:
+
+	$ git clone https://github.com/thurstonemerson/swiss-system-tournament.git
+	$ cd swiss-system-tournament
+
+1. Create and initialize virtualenv for the project:
+
+	$ mkvirtualenv swiss-system-tournament
+	$ pip install -r requirements.txt
+
+
+1. This module has a PostgreSQL backend. The database can be created using the script provided:
+
+	$ psql
 	\i tournament.sql
+	
+	
+##Testing:
 
-Test cases for the module are included and can be run via the following command:
+Run unit tests using the test script provided:
 
 	$ python tournament_test.py
 	1. Old matches can be deleted.
@@ -30,8 +55,19 @@ Test cases for the module are included and can be run via the following command:
 	8. After one match, players with one win are paired.
 	Success!  All tests pass!
 
-##Release plans:
+##Known Issues:
 
-###TODO:
-- Prevent rematches between players during multiple rounds of a single tournament
-- Allow odd number of players to be registered into a tournament
+- Rematches between players during multiple rounds of a single tournament are allowed
+- It is not possible to register an odd number of players into a tournament
+
+##License
+
+The MIT License (MIT)
+
+Copyright (c) 2016 Thurston Emerson
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
