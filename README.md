@@ -18,24 +18,24 @@ The following assumes you have all of the tools listed above installed.
 
 1. Clone the project:
 
-```
+    ```
 	$ git clone https://github.com/thurstonemerson/swiss-system-tournament.git
 	$ cd swiss-system-tournament
-```
+    ```
 
 1. Create and initialize virtualenv for the project:
 
-```
+    ```
 	$ mkvirtualenv swiss-system-tournament
 	$ pip install -r requirements.txt
-```
+    ```
 
 1. This module has a PostgreSQL backend. The database can be created using the script provided:
 
-```
+    ```
 	$ psql
 	\i tournament.sql
-```
+    ```
 	
 ## Testing:
 
