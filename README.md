@@ -1,4 +1,4 @@
-#Swiss System Chess Tournament
+# Swiss System Chess Tournament
 
 Python module which can be used to store the details of multiple chess tournaments. Game players can be registered into tournaments, and matches between players can be recorded. Player matches are scheduled using the Swiss pairing system where the goal is to pair (as close as possible) each player with an similar-skilled opponent. Players are ranked according to the number of matches won within a tournament,
 if the players are tied then they are ranked according to the number of matches won by their opponents. 
@@ -8,36 +8,36 @@ if the players are tied then they are ranked according to the number of matches 
 
 You'll need the following for your development environment:
 
-- Python
-- PostgreSQL
+- [Python] (http://www.python.org)
+- [PostgreSQL] (http://www.postgresql.org/)
+- [virtualenv] (https://python-guide.readthedocs.org/en/latest/dev/virtualenvs/#virtualenv) (recommended)
 
-Recommended to use the following tools:
-
-- virtualenv
-- virtualenvwrapper
-
-##Local Installation
+## Local Installation
 
 The following assumes you have all of the tools listed above installed.
 
 1. Clone the project:
 
+```
 	$ git clone https://github.com/thurstonemerson/swiss-system-tournament.git
 	$ cd swiss-system-tournament
+```
 
 1. Create and initialize virtualenv for the project:
 
+```
 	$ mkvirtualenv swiss-system-tournament
 	$ pip install -r requirements.txt
-
+```
 
 1. This module has a PostgreSQL backend. The database can be created using the script provided:
 
+```
 	$ psql
 	\i tournament.sql
+```
 	
-	
-##Testing:
+## Testing:
 
 Run unit tests using the test script provided:
 
@@ -55,12 +55,12 @@ Run unit tests using the test script provided:
 	8. After one match, players with one win are paired.
 	Success!  All tests pass!
 
-##Known Issues:
+## Known Issues:
 
 - Rematches between players during multiple rounds of a single tournament are allowed
 - It is not possible to register an odd number of players into a tournament
 
-##License
+## License
 
 The MIT License (MIT)
 
